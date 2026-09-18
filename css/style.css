@@ -1,0 +1,312 @@
+:root {
+    --chat-sage: #eef3ee;
+    --chat-sage-deep: #427952;
+    --chat-bot: #ffffff;
+    --chat-user: #c9f6aa;
+    --chat-text: #050806;
+    --chat-muted: #9ca29d;
+    --chat-accent: #397953;
+    --chat-accent-dark: #2c6142;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    color: var(--chat-text);
+    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--chat-sage-deep);
+}
+
+.wa-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: start center;
+    padding: 0 18px;
+}
+
+.wa-app {
+    width: min(100%, 520px);
+    min-height: min(680px, 82vh);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 30px 30px 0 0;
+    background: var(--chat-sage);
+    box-shadow: 0 15px 44px rgba(9, 25, 13, .19);
+}
+
+.wa-topbar {
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 20px;
+    color: var(--chat-text);
+    background: var(--chat-sage);
+}
+
+.wa-topbar::before {
+    content: "‹";
+    margin-top: -5px;
+    font-family: Arial, sans-serif;
+    font-size: 42px;
+    font-weight: 200;
+    line-height: .55;
+}
+
+.wa-topbar::after {
+    content: "▢  ☎";
+    margin-left: auto;
+    font-size: 23px;
+    letter-spacing: 2px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.wa-topbar strong,
+.wa-topbar small { display: block; }
+.wa-topbar strong { font-size: clamp(18px, 2.6vw, 23px); letter-spacing: -.4px; }
+.wa-topbar small { margin-top: 1px; color: var(--chat-muted); font-size: clamp(12px, 1.7vw, 16px); }
+
+.wa-avatar {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    place-items: center;
+    border: 4px solid rgba(255,255,255,.78);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 21px;
+    font-weight: 750;
+    letter-spacing: -2px;
+    background:
+        radial-gradient(circle at 30% 28%, #b8efd0 0 13%, transparent 14%),
+        linear-gradient(135deg, #77ba9a, #397953 72%);
+    box-shadow: 0 2px 10px rgba(46, 92, 63, .16);
+}
+
+.wa-chat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 22px 24px;
+    overflow-y: auto;
+    background: var(--chat-sage);
+}
+
+/* The reference is an uninterrupted chat: no date chips or message timestamps. */
+.wa-date,
+.wa-bubble time { display: none; }
+
+.wa-bubble {
+    position: relative;
+    max-width: min(80%, 410px);
+    padding: 13px 18px;
+    border-radius: 24px;
+    font-size: clamp(16px, 2.1vw, 20px);
+    line-height: 1.18;
+    letter-spacing: -.9px;
+    box-shadow: none;
+}
+
+.wa-bubble p { margin: 0 0 11px; }
+.wa-bubble p:last-of-type { margin-bottom: 0; }
+.wa-bubble h1 { margin: 0 0 13px; font-size: .82em; line-height: 1.18; }
+
+.wa-bot {
+    align-self: flex-start;
+    margin-left: 60px;
+    background: var(--chat-bot);
+}
+
+.wa-bot::before {
+    content: "C";
+    position: absolute;
+    top: 50%;
+    left: -60px;
+    display: grid;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    transform: translateY(-50%);
+    border: 3px solid rgba(255,255,255,.84);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 19px;
+    font-weight: 750;
+    letter-spacing: -2px;
+    background:
+        radial-gradient(circle at 30% 28%, #b8efd0 0 13%, transparent 14%),
+        linear-gradient(135deg, #77ba9a, #397953 72%);
+    box-shadow: 0 2px 10px rgba(46, 92, 63, .15);
+}
+
+.wa-user {
+    align-self: flex-end;
+    background: var(--chat-user);
+}
+
+.wa-consent {
+    width: min(80%, 410px);
+    margin-left: 60px;
+    padding: 16px 18px;
+    border-radius: 24px;
+    background: var(--chat-bot);
+}
+
+.wa-check {
+    display: flex;
+    gap: 13px;
+    align-items: flex-start;
+    margin: 0 0 19px;
+    color: #202520;
+    font-size: clamp(13px, 1.6vw, 15px);
+    line-height: 1.35;
+    cursor: pointer;
+}
+
+.wa-check input {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    margin: 2px 0 0;
+    accent-color: var(--chat-accent);
+}
+
+.wa-check a { color: #18725f; font-weight: 700; }
+
+.wa-primary,
+.wa-link-button,
+.button,
+.menu-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 51px;
+    border: 0;
+    border-radius: 999px;
+    color: #fff;
+    font: inherit;
+    font-size: clamp(15px, 1.9vw, 19px);
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    background: var(--chat-accent);
+    transition: background .16s ease, transform .16s ease;
+}
+
+.wa-primary { width: 100%; padding: 11px 20px; }
+.wa-primary:hover, .wa-link-button:hover, .button:hover, .menu-action:hover { background: var(--chat-accent-dark); transform: translateY(-1px); }
+
+.wa-decline {
+    width: min(80%, 410px);
+    margin: 0 0 0 60px;
+    text-align: center;
+}
+
+.wa-decline button,
+.secondary,
+.button-link {
+    border: 0;
+    padding: 9px;
+    color: #667369;
+    font: inherit;
+    font-size: 16px;
+    text-decoration: underline;
+    cursor: pointer;
+    background: transparent;
+}
+
+.wa-compose {
+    width: 100%;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: auto;
+    padding: 8px 8px 8px 24px;
+    border-radius: 999px;
+    background: #fff;
+}
+
+.wa-compose input {
+    width: 100%;
+    min-height: 43px;
+    border: 0;
+    outline: 0;
+    color: var(--chat-text);
+    font: inherit;
+    font-size: clamp(15px, 1.9vw, 18px);
+    background: transparent;
+}
+
+.wa-compose input::placeholder { color: #a2aaa3; }
+
+.wa-send {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    color: #fff;
+    font-size: 19px;
+    cursor: pointer;
+    background: var(--chat-accent);
+}
+
+.menu {
+    width: min(80%, 410px);
+    display: grid;
+    gap: 13px;
+    margin: 3px 0 4px 60px;
+}
+
+.menu a,
+.menu-action {
+    width: 100%;
+    min-height: 46px;
+    justify-content: flex-start;
+    padding: 10px 16px;
+    color: var(--chat-text);
+    font-size: clamp(15px, 1.8vw, 17px);
+    font-weight: 500;
+    background: var(--chat-bot);
+}
+
+.menu a { text-decoration: none; }
+.menu form { margin: 0; }
+
+/* Fallback for the small test utility page kept in the project. */
+.container { width: min(820px, calc(100% - 32px)); margin: 32px auto; }
+.card { padding: 28px; border-radius: 36px; background: var(--chat-bot); }
+.welcome { font-size: 20px; font-weight: 700; }
+.small { color: #667369; font-size: 14px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+@media (max-width: 600px) {
+    .wa-page { display: block; padding: 0; background: var(--chat-sage); }
+    .wa-app { width: 100%; min-height: 100vh; border-radius: 0; box-shadow: none; }
+    .wa-topbar { min-height: 86px; gap: 13px; padding: 14px 19px; }
+    .wa-topbar::before { margin-top: -4px; font-size: 54px; }
+    .wa-topbar::after { content: "☎"; font-size: 26px; letter-spacing: 0; }
+    .wa-avatar { width: 54px; height: 54px; flex-basis: 54px; border-width: 2px; font-size: 24px; }
+    .wa-topbar strong { font-size: 20px; letter-spacing: -.3px; }
+    .wa-topbar small { font-size: 15px; }
+    .wa-chat { gap: 12px; padding: 14px 16px 35px; }
+    .wa-bubble { max-width: calc(100% - 63px); padding: 15px 19px; border-radius: 29px; font-size: 20px; letter-spacing: -.35px; }
+    .wa-bot { margin-left: 63px; }
+    .wa-bot::before { left: -63px; width: 49px; height: 49px; border-width: 2px; font-size: 20px; }
+    .wa-consent { width: calc(100% - 63px); margin-left: 63px; padding: 20px; border-radius: 29px; }
+    .wa-check { font-size: 15px; }
+    .wa-decline { width: calc(100% - 63px); margin-left: 63px; }
+    .wa-compose { min-height: 56px; padding-left: 18px; }
+    .wa-compose input { min-height: 45px; font-size: 16px; }
+    .wa-send { width: 46px; height: 46px; flex-basis: 46px; font-size: 20px; }
+    .menu { width: calc(100% - 63px); margin-left: 63px; gap: 9px; }
+    .menu a, .menu-action { min-height: 52px; padding: 11px 18px; font-size: 17px; }
+}
