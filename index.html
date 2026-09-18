@@ -38,7 +38,7 @@
     .user { align-self: flex-end; background: var(--user); }
     .consent { width: min(80%, 410px); margin-left: 60px; padding: 16px 18px; border-radius: 24px; background: #fff; }
     .check { display: flex; gap: 11px; align-items: flex-start; margin-bottom: 15px; color: #202520; font-size: 14px; line-height: 1.35; cursor: pointer; }
-    .check input { width: 20px; height: 20px; flex: 0 0 20px; margin: 1px 0 0; accent-color: var(--accent); }
+    .check input { width: 20px; height: 20px; flex: 0 0 20px; margin: 1px 0 0; accent-color: var(--accent); cursor: pointer; }
     .check a { color: #18725f; font-weight: 700; }
     .primary, .link-button { display: inline-flex; align-items: center; justify-content: center; min-height: 45px; border: 0; border-radius: 999px; padding: 10px 17px; color: #fff; font-size: 15px; font-weight: 700; text-decoration: none; cursor: pointer; background: var(--accent); transition: background .16s ease, transform .16s ease; }
     .primary { width: 100%; }
@@ -177,26 +177,45 @@
     function showConsent() {
         clearChat();
         addBubble('👋 ¡Hola! Soy el asistente virtual de Coomeva.<br><br>Antes de continuar, necesitamos tu autorización para atenderte de forma segura.');
-        const form = document.createElement('form');
-        form.className = 'consent';
-        form.innerHTML = `
-            <label class="check"><input type="checkbox" id="termsCheck"><span>Acepto los <a href="#terminos" data-legal="terms">términos y condiciones</a>.</span></label>
-            <label class="check"><input type="checkbox" id="privacyCheck"><span>Autorizo el <a href="#privacidad" data-legal="privacy">tratamiento de mis datos personales</a> para validar mi afiliación y atender mi solicitud.</span></label>
-            <button class="primary" type="submit">Aceptar y continuar</button>`;
-        form.addEventListener('click', event => {
+
+        const box = document.createElement('div');
+        box.className = 'consent';
+        box.innerHTML = `
+            <label class="check">
+                <input type="checkbox" id="termsCheck">
+                <span>Acepto los <a href="#terminos" data-legal="terms">términos y condiciones</a>.</span>
+            </label>
+            <label class="check">
+                <input type="checkbox" id="privacyCheck">
+                <span>Autorizo el <a href="#privacidad" data-legal="privacy">tratamiento de mis datos personales</a> para validar mi afiliación y atender mi solicitud.</span>
+            </label>
+            <button class="primary" type="button" id="acceptBtn">Aceptar y continuar</button>
+        `;
+
+        // Abrir modales legales
+        box.addEventListener('click', event => {
             const link = event.target.closest('[data-legal]');
-            if (link) { event.preventDefault(); showLegal(link.dataset.legal); }
+            if (link) {
+                event.preventDefault();
+                showLegal(link.dataset.legal);
+            }
         });
-        form.addEventListener('submit', event => {
-            event.preventDefault();
-            if (!form.querySelector('#termsCheck').checked || !form.querySelector('#privacyCheck').checked) {
+
+        // Botón aceptar
+        box.querySelector('#acceptBtn').addEventListener('click', () => {
+            const termsOk = box.querySelector('#termsCheck').checked;
+            const privacyOk = box.querySelector('#privacyCheck').checked;
+
+            if (!termsOk || !privacyOk) {
                 addBubble('Para continuar debes aceptar los términos y la autorización de tratamiento de datos.');
                 return;
             }
+
             state.consent = true;
             showIdentification();
         });
-        chat.append(form);
+
+        chat.append(box);
         addButton('No acepto', showAdvisorWaiting, 'text-button');
         addNotice();
     }
@@ -204,23 +223,51 @@
     function showIdentification() {
         clearChat();
         addBubble('Gracias por tu autorización. Para comenzar, escribe tu número de cédula.');
+
         const form = document.createElement('form');
         form.className = 'compose';
-        form.innerHTML = '<input id="cedula" inputmode="numeric" autocomplete="off" maxlength="15" placeholder="Escribe tu número de cédula" required><button class="send" type="submit" aria-label="Enviar">➤</button>';
-        form.addEventListener('submit', event => {
-            event.preventDefault();
-            const input = form.querySelector('#cedula');
-            const documentNumber = input.value.trim();
-            if (!/^\\d{6,15}$/.test(documentNumber)) {
-                addBubble('Ingresa una cédula válida de 6 a 15 números.');
+        form.innerHTML = '<input id="cedula" type="text" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="Escribe tu número de cédula"><button class="send" type="button" aria-label="Enviar">➤</button>';
+
+        const input = form.querySelector('#cedula');
+        const sendBtn = form.querySelector('.send');
+
+        function procesarCedula() {
+            const raw = input.value.trim();
+            const documentNumber = raw.replace(/[.\s-]/g, '');
+
+            if (!/^\d{6,15}$/.test(documentNumber)) {
+                addBubble('Ingresa una cédula válida de 6 a 15 números (solo dígitos, sin puntos ni espacios).');
+                input.focus();
                 return;
             }
+
             addBubble(escapeHtml(documentNumber), 'user');
             state.userType = documentNumber === '900000001' || documentNumber === '900000002' ? 'affiliate' : 'visitor';
             state.userName = documentNumber === '900000001' ? 'Ana Prueba' : 'Carlos Demo';
             setTimeout(showMainMenu, 220);
+        }
+
+        sendBtn.addEventListener('click', procesarCedula);
+
+        form.addEventListener('submit', event => {
+            event.preventDefault();
+            procesarCedula();
         });
+
+        input.addEventListener('keydown', event => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                procesarCedula();
+            }
+        });
+
+        // Solo permitir dígitos, puntos, espacios y guiones mientras escribe
+        input.addEventListener('input', event => {
+            event.target.value = event.target.value.replace(/[^\d.\s-]/g, '');
+        });
+
         chat.append(form);
+        setTimeout(() => input.focus(), 50);
         addNotice();
     }
 
@@ -259,7 +306,7 @@
     function assignAdvisor() {
         clearChat();
         if (state.advisorAssigned) {
-            addBubble('👨‍💼 Ya tienes un asesor asignado. Cuando termines, selecciona “Finalizar atención”.');
+            addBubble('👨‍💼 Ya tienes un asesor asignado. Cuando termines, selecciona "Finalizar atención".');
         } else if (state.advisorsAvailable > 0) {
             const name = state.advisorsAvailable === 2 ? 'Laura Asesora Demo' : 'Miguel Asesor Demo';
             state.advisorsAvailable -= 1;
@@ -291,6 +338,7 @@
         state = { consent: false, userType: null, userName: '', advisorsAvailable: 2, advisorAssigned: false };
         showConsent();
     });
+
     showConsent();
 })();
 </script>
